@@ -22,10 +22,9 @@ new_rules = {
     'C Y': 3 + 3 
 }
 
-
 with open('day02/input', encoding='utf-8') as f:
     strategy_guide = [line.strip() for line in f]
-    score = sum([rules[row] for row in strategy_guide])
-    print(f'Part 1: {score}')
-    score = sum([new_rules[row] for row in strategy_guide])
-    print(f'Part 2: {score}')
+score = sum([rules[row] for row in strategy_guide])
+print(f'Part 1: {score}')
+score = sum([new_rules[row] for row in strategy_guide])
+print(f'Part 2: {score}')
