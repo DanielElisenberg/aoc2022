@@ -9,11 +9,10 @@ def parse_carried_calories(lines: list[str]) -> list[int]:
     ]
 
 
-if __name__ == '__main__':
-    with open('day01/input', encoding='utf-8') as f:
-        lines = [line.strip() for line in f]
+with open('day01/input', encoding='utf-8') as f:
+    lines = [line.strip() for line in f]
 
-    calories_carried = parse_carried_calories(lines)
-    print(f'Part 1: {max(calories_carried)}')
-    calories_carried.sort()
-    print(f'Part 2: {sum(calories_carried[-3:])}')
+calories_carried = parse_carried_calories(lines)
+calories_carried.sort()
+print(f'Part 1: {calories_carried[-1]}')
+print(f'Part 2: {sum(calories_carried[-3:])}')
