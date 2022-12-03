@@ -1,9 +1,9 @@
 import string
 
 
-characters = string.ascii_lowercase + string.ascii_uppercase
+CHARACTERS = string.ascii_lowercase + string.ascii_uppercase
 numeric_value_of = {
-    character: index + 1 for index, character in enumerate(characters)
+    character: index + 1 for index, character in enumerate(CHARACTERS)
 }
 
 

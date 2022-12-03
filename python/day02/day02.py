@@ -19,7 +19,7 @@ new_rules = {
     'B X': 0 + 1,
     'B Z': 6 + 3,
     'C X': 0 + 2,
-    'C Y': 3 + 3 
+    'C Y': 3 + 3
 }
 
 with open('day02/input', encoding='utf-8') as f:
