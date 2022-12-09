@@ -30,24 +30,25 @@ def calculate_tail_positions(
     head_positions: list[tuple[int, int]]
 ) -> list[tuple[int, int]]:
     tail_positions = [(0, 0)]
-    for next_head_position in head_positions:
+    for next_head_position in head_positions[1:]:
         tail_positions.append(follow_head(
             tail_positions[-1], next_head_position
         ))
-    return [position for position in tail_positions][1:]
+    return tail_positions
 
 
 with open('day09/input', encoding='utf-8') as f:
     lines = [line.strip().split(' ') for line in f]
     head_movements = reduce(
-        lambda x, y: x + y,
-        [[DIRECTIONS[line[0]]] * int(line[1]) for line in lines]
+        lambda a, b: a + b,
+        [[DIRECTIONS[move]] * int(times) for move, times in lines]
     )
     head_positions = list(accumulate(
-        head_movements, lambda x, y: (x[0]+y[0], x[1]+y[1])
+        head_movements, lambda a, b: (a[0]+b[0], a[1]+b[1])
     ))
 
 print(f'Part 1: {len(set(calculate_tail_positions(head_positions)))}')
+
 for i in range(9):
     head_positions = calculate_tail_positions(head_positions)
 print(f'Part 2: {len(set(head_positions))}')
