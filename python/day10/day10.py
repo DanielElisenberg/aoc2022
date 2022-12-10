@@ -5,14 +5,14 @@ from itertools import accumulate
 
 with open('day10/input', encoding='utf-8') as f:
     instructions = [line.strip().split(' ') for line in f]
-instructions = ([[1]] + [
-    [0] if instruction == ['noop'] else [0, int(instruction[1])]
-    for instruction in instructions
-])
-cycles = list(accumulate(
-    list(reduce(lambda l1, l2: l1+l2, instructions)),
-    lambda x1, x2: x1+x2
-))
+add_per_cycle = reduce(
+    lambda l1, l2: l1+l2,
+    [[1]] + [
+        [0] if instruction == ['noop'] else [0, int(instruction[1])]
+        for instruction in instructions
+    ]
+)
+cycles = list(accumulate(add_per_cycle, lambda x1, x2: x1+x2))
 
 signal_strength_sum = sum([
     x*(index+1) for index, x in enumerate(cycles)
