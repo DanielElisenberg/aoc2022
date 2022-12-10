@@ -1,13 +1,11 @@
-
-from functools import reduce
+from itertools import chain
 from itertools import accumulate
 
 
 with open('day10/input', encoding='utf-8') as f:
     instructions = [line.strip().split(' ') for line in f]
-add_per_cycle = reduce(
-    lambda l1, l2: l1+l2,
-    [[1]] + [
+add_per_cycle = chain(
+    *[[1]] + [
         [0] if instruction == ['noop'] else [0, int(instruction[1])]
         for instruction in instructions
     ]
@@ -20,11 +18,9 @@ signal_strength_sum = sum([
 ])
 print(f'Part 1: {signal_strength_sum}')
 
-pixels = [
+pixels = ''.join([
     '#' if index % 40 in range(x-1, x+2) else '.'
     for index, x in enumerate(cycles)
-]
-display = '\n'.join(
-    [''.join([pixels[(y*40)+x] for x in range(39)]) for y in range(6)]
-)
+])
+display = '\n'.join(pixels[(row*40): (row*40)+39] for row in range(6))
 print(f'Part 2:\n{display}')
