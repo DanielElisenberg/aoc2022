@@ -1,7 +1,7 @@
 def manhattan_distance(
     point_a: tuple[int, int], point_b: tuple[int, int]
 ) -> int:
-    return abs(point_a[0]-point_b[0]) + abs(point_a[1]-point_b[1])
+    return (abs(point_a[0]-point_b[0]) + abs(point_a[1]-point_b[1]))
 
 
 def find_shortest_path(
@@ -9,43 +9,32 @@ def find_shortest_path(
     goal: tuple[int, int],
     walk_map: dict[tuple[int, int]: list[tuple[int, int]]]
 ) -> int:
-    found = {start: manhattan_distance(start, goal)}
+    found = {start: (0, manhattan_distance(start, goal))}
     explored = {}
-    step_weight = 2
+    came_from = {}
     while True:
         if not found:
             return None
-        current = min(found, key=found.get)
-        current_score = found[current]
-        current_manhattan_distance = manhattan_distance(current, goal)
-        current_step_score = current_score - current_manhattan_distance
+        current = min(found, key=lambda k: sum(found[k]))
+        explored[current] = found[current]
         del found[current]
-        explored[current] = current_score
         if goal in walk_map[current]:
+            came_from[goal] = current
             break
         for walkable in walk_map[current]:
-            if walkable in explored:
+            if (
+                walkable in found
+                and found[walkable][0] <= explored[current][0] + 1
+                or walkable in explored
+            ):
                 continue
-            walkable_manhattan_distance = manhattan_distance(walkable, goal)
-            walkable_score = (
-                walkable_manhattan_distance + current_step_score + step_weight
+            found[walkable] = (
+                explored[current][0] + 1, manhattan_distance(walkable, goal)
             )
-            if walkable in found and found[walkable] <= walkable_score:
-                continue
-            found[walkable] = walkable_score
-
+            came_from[walkable] = current
     path = [goal]
-    while True:
-        if path[-1] == start:
-            break
-        walkables = [
-            square for square in walk_map if path[-1] in walk_map[square]
-        ]
-        walkable_dict = {
-            square: explored.get(square, None) for square in walkables
-            if explored.get(square, None) is not None
-        }
-        path += [min(walkable_dict, key=walkable_dict.get)]
+    while path[-1] != start:
+        path += [came_from[path[-1]]]
     return path
 
 
@@ -96,8 +85,7 @@ height_map[start[0]][start[1]] = 'a'
 height_map[goal[0]][goal[1]] = 'z'
 walk_map = generate_walk_map(height_map)
 
-shortest_path = find_shortest_path(start, goal, walk_map)
-print(f'Part 1: {len(shortest_path) - 1}')
+print(f'Part 1: {len(find_shortest_path(start, goal, walk_map)) - 1}')
 
 a_paths = [
     find_shortest_path(a_square, goal, walk_map)
