@@ -1,35 +1,33 @@
 import json
 from copy import copy
 from collections import deque
+from itertools import chain
 
 
 class Rock:
-    y_size: int
-    x_size: int
     shape: list[tuple[int, int]]
 
     def __init__(self, shape: list[list[str]], tower_height: int):
-        self.y_size = len(shape)
-        self.x_size = len(shape[0])
         self.shape = []
         y_transform = tower_height + 4
         x_transform = 3
-        for y in range(self.y_size):
-            for x in range(self.x_size):
-                if list(reversed(shape))[y][x] == '#':
-                    self.shape.append(
-                        (x + x_transform, y + y_transform)
-                    )
+        self.shape = chain(*[
+            [
+                (x + x_transform, y + y_transform)
+                for x, char in enumerate(row) if char == '#'
+            ]
+            for y, row in enumerate(reversed(shape))
+        ])
 
     def push(
         self, wind: int, collision_map: dict[tuple[int, int], str]
     ) -> None:
         new_shape = [(x+wind, y) for x, y in self.shape]
-        if (
-            not any([coordinate in collision_map for coordinate in new_shape])
-            and not any([x in [8, 0] for x, _ in new_shape])
-        ):
-            self.shape = new_shape
+        collides = (
+            any([coordinate in collision_map for coordinate in new_shape])
+            or any([x in [8, 0] for x, _ in new_shape])
+        )
+        self.shape = new_shape if not collides else self.shape
 
     def fall(self, collision_map: dict[tuple[int, int], str]) -> bool:
         new_shape = [(x, y-1) for x, y in self.shape]
@@ -48,7 +46,7 @@ def generate_drop_state(
     winds: deque[int],
     tower_height: int,
     collision_map: dict[tuple[int, int], str],
-):
+) -> str:
     deque_state_string = ''.join(
         [str(winds[i]) for i in range(0, len(winds))]
     )
@@ -65,7 +63,7 @@ def resolve_repetitions(
     rock_number: int,
     tower_height: int,
     amount: int
-):
+) -> int:
     last_occurence, last_highest = drop_states[drop_state]
     repeat_length = rock_number - last_occurence
     remaining_rocks = amount - last_occurence
